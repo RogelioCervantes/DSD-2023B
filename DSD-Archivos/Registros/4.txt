@@ -1,0 +1,9 @@
+Nombre = Brandon
+ApellidoP = Aceu
+ApellidoM = Winn
+Edad = 28
+Sexo = Hombre
+EdoCivil = Soltero
+Domicilio = Downtown LA
+Municipio = LA
+CP = 99201

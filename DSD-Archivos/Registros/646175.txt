@@ -1,0 +1,9 @@
+Nombre = Rogr
+ApellidoP = C
+ApellidoM = C
+Edad = 22
+Sexo = Hombre
+EdoCivil = Soltero
+Domicilio = Mutualismo
+Municipio = Autlan
+CP = 48904
