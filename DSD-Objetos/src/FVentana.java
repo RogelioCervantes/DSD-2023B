@@ -2,36 +2,35 @@
 import java.awt.Color;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+// @author Rogelio Cervantes Castellon
 public class FVentana extends javax.swing.JFrame {
 
-    JLabel[] registroEtiqueta = new JLabel[4];
+    Registro[] registros = new Registro[4];
     JTextField[] registroTF = new JTextField[5];
     JButton[] botones = new JButton[4];
-
-    String[][] datosGuardados = new String[4][5];
-    boolean[] ocupado = new boolean[4];
-
     Color rojizo = new Color(239, 0, 62);
     Color grisaceo = new Color(29, 29, 29);
+
+    enum E {
+        LIBRE, OCUPADO, SELECCIONADO
+    }
+    int numeroEtiqueta;
 
     public FVentana() {
         initComponents();
         setLocationRelativeTo(this);
         cargarElementos();
-        coloresFondo();
         onOff(false);
-        for (int i = 0; i < ocupado.length; i++) {
-            ocupado[i] = false;
-        }
     }
 
     void cargarElementos() {
-        registroEtiqueta[0] = LR1;
-        registroEtiqueta[1] = LR2;
-        registroEtiqueta[2] = LR3;
-        registroEtiqueta[3] = LR4;
+        registros[0] = new Registro(LR1, false, null);
+        registros[1] = new Registro(LR2, false, null);
+        registros[2] = new Registro(LR3, false, null);
+        registros[3] = new Registro(LR4, false, null);
 
         registroTF[0] = TFRegistro;
         registroTF[1] = TFNombre;
@@ -55,10 +54,22 @@ public class FVentana extends javax.swing.JFrame {
         }
     }
 
-    void coloresFondo() {
-        for (int x = 0; x < registroEtiqueta.length; x++) {
-            registroEtiqueta[x].setBackground(Color.WHITE);
-            registroEtiqueta[x].setForeground(grisaceo);
+    void coloresFondo(E estado) {
+        switch (estado) {
+            case LIBRE:
+                registros[numeroEtiqueta].getEtiqueta().setBackground(Color.WHITE);
+                registros[numeroEtiqueta].getEtiqueta().setForeground(grisaceo);
+                break;
+            case OCUPADO:
+                registros[numeroEtiqueta].getEtiqueta().setBackground(grisaceo);
+                registros[numeroEtiqueta].getEtiqueta().setForeground(Color.WHITE);
+                break;
+            case SELECCIONADO:
+                registros[numeroEtiqueta].getEtiqueta().setBackground(rojizo);
+                registros[numeroEtiqueta].getEtiqueta().setForeground(grisaceo);
+                break;
+            default:
+                throw new AssertionError();
         }
     }
 
@@ -66,6 +77,43 @@ public class FVentana extends javax.swing.JFrame {
         for (int i = 0; i < registroTF.length; i++) {
             registroTF[i].setText("");
         }
+    }
+
+    void etiquetaSeleccionada() {
+        if (registros[numeroEtiqueta].getEtiqueta().getBackground() != rojizo) {
+            if (registros[numeroEtiqueta].isOcupado()) {
+                for (int i = 0; i < registroTF.length; i++) {
+                    registroTF[i].setText(registros[numeroEtiqueta].getDatos()[i]);
+                }
+                BModificar.setEnabled(true);
+                BEliminar.setEnabled(true);
+            } else {
+                BNuevo.setEnabled(true);
+                coloresFondo(E.SELECCIONADO);
+            }
+        }
+    }
+
+    boolean checkInfo() {
+        String[] tipoSangre = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+        
+        for (int i = 0; i < tipoSangre.length; i++) {
+            if (!tipoSangre[i].equals(TFSangre.getText())) {
+                return false;
+            }
+        }
+        
+        for (int i = 0; i < registroTF.length; i++) {
+            if (registroTF[i].getText().equals("")) {
+                return false;
+            }
+        }
+        
+        if (TFTelefono.getText().length() != 10) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**
@@ -154,7 +202,12 @@ public class FVentana extends javax.swing.JFrame {
 
         BModificar.setText("Modificar");
 
-        BEliminar.setText("Elimninar");
+        BEliminar.setText("Eliminar");
+        BEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BEliminarActionPerformed(evt);
+            }
+        });
 
         TFNombre.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
 
@@ -177,28 +230,26 @@ public class FVentana extends javax.swing.JFrame {
                         .addComponent(LR4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(TFRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(TFNombre))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(TFTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(TFSangre, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(TFEdad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(TFNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(BNuevo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TFSangre)
+                        .addComponent(BModificar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TFEdad, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(14, 14, 14))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(TFRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TFTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(BNuevo)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(BModificar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(BEliminar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(BLimpiar)))
-                        .addContainerGap(35, Short.MAX_VALUE))))
+                        .addComponent(BEliminar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(BLimpiar)))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -214,74 +265,85 @@ public class FVentana extends javax.swing.JFrame {
                             .addComponent(LR3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(LR4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(TFRegistro, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
-                            .addComponent(TFTelefono))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(TFRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TFNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(TFSangre, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(TFEdad, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(TFNombre))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(TFTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                            .addComponent(TFSangre)
+                            .addComponent(TFEdad))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(BNuevo)
                             .addComponent(BModificar)
                             .addComponent(BEliminar)
                             .addComponent(BLimpiar))))
-                .addContainerGap(225, Short.MAX_VALUE))
+                .addContainerGap(224, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void LR1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR1MouseClicked
-        if (LR1.getBackground() != rojizo) {
-            if (ocupado[0]) {
-                for (int i = 0; i < 5; i++) {
-                    registroTF[i].setText(datosGuardados[0][i]);
-                }
-                BModificar.setEnabled(true);
-            } else {
-                BNuevo.setEnabled(true);
-                registroEtiqueta[0].setBackground(rojizo);
-                registroEtiqueta[0].setForeground(grisaceo);
-            }
-        }
+        numeroEtiqueta = 0;
+        etiquetaSeleccionada();
     }//GEN-LAST:event_LR1MouseClicked
 
     private void LR2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR2MouseClicked
-        // TODO add your handling code here:
+        numeroEtiqueta = 1;
+        etiquetaSeleccionada();
     }//GEN-LAST:event_LR2MouseClicked
 
     private void LR3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR3MouseClicked
-        // TODO add your handling code here:
+        numeroEtiqueta = 2;
+        etiquetaSeleccionada();
     }//GEN-LAST:event_LR3MouseClicked
 
     private void LR4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR4MouseClicked
-        // TODO add your handling code here:
+        numeroEtiqueta = 3;
+        etiquetaSeleccionada();
     }//GEN-LAST:event_LR4MouseClicked
 
     private void BNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BNuevoActionPerformed
         if (BNuevo.getText().equals("Nuevo")) {
             onOff(true);
+            TFRegistro.setEnabled(false);
             BNuevo.setText("Guardar");
-            TFRegistro.setText(registroEtiqueta[0].getText());
+            BEliminar.setText("Cancelar");
+            TFRegistro.setText(registros[numeroEtiqueta].getEtiqueta().getText());
             TFNombre.requestFocus();
         } else {
+            if (checkInfo()) {
+                JOptionPane.showMessageDialog(null, "Uno de los campos es incorrecto.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            } else {
+                for (int x = 0; x < registros[numeroEtiqueta].getDatos().length; x++) {
+                    registros[numeroEtiqueta].getDatos()[x] = registroTF[x].getText();
+                }
 
-            for (int x = 0; x < datosGuardados[0].length; x++) {
-                datosGuardados[0][x] = registroTF[x].getText();
+                limpiar();
+                onOff(false);
+                registros[numeroEtiqueta].setOcupado(true);
+                coloresFondo(E.OCUPADO);
+                BNuevo.setText("Nuevo");
             }
-
-            ocupado[0] = true;
-            limpiar();
-            onOff(false);
-            registroEtiqueta[0].setBackground(new Color(29, 29, 29));
-            registroEtiqueta[0].setForeground(Color.WHITE);
-            BNuevo.setText("Nuevo");
         }
     }//GEN-LAST:event_BNuevoActionPerformed
+
+    private void BEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BEliminarActionPerformed
+        if (BEliminar.getText().equals("Eliminar")) {
+            if (JOptionPane.showConfirmDialog(null, "¿Seguro?", "Eliminar registro", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)
+                    == JOptionPane.YES_OPTION) {
+                registros[numeroEtiqueta].setDatos(null);
+                registros[numeroEtiqueta].setOcupado(false);
+                coloresFondo(E.LIBRE);
+            }
+        } else {
+            limpiar();
+            onOff(false);
+            coloresFondo(E.LIBRE);
+        }
+    }//GEN-LAST:event_BEliminarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -294,7 +356,7 @@ public class FVentana extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("FlatLaf Cupertino Dark".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
