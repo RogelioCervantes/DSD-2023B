@@ -1,11 +1,11 @@
 
 import java.awt.Color;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 // @author Rogelio Cervantes Castellon
+
 public class FVentana extends javax.swing.JFrame {
 
     Registro[] registros = new Registro[4];
@@ -24,6 +24,7 @@ public class FVentana extends javax.swing.JFrame {
         setLocationRelativeTo(this);
         cargarElementos();
         onOff(false);
+        TFRegistro.setEnabled(false);
     }
 
     void cargarElementos() {
@@ -45,7 +46,7 @@ public class FVentana extends javax.swing.JFrame {
     }
 
     void onOff(boolean actDesc) {
-        for (int y = 0; y < registroTF.length; y++) {
+        for (int y = 1; y < registroTF.length; y++) {
             registroTF[y].setEnabled(actDesc);
         }
 
@@ -99,21 +100,21 @@ public class FVentana extends javax.swing.JFrame {
         
         for (int i = 0; i < tipoSangre.length; i++) {
             if (!tipoSangre[i].equals(TFSangre.getText())) {
-                return false;
+                return true;
             }
         }
         
         for (int i = 0; i < registroTF.length; i++) {
             if (registroTF[i].getText().equals("")) {
-                return false;
+                return true;
             }
         }
         
         if (TFTelefono.getText().length() != 10) {
-            return false;
+            return true;
         }
         
-        return true;
+        return false;
     }
 
     /**
@@ -141,7 +142,9 @@ public class FVentana extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        LR1.setBackground(new java.awt.Color(255, 255, 255));
         LR1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        LR1.setForeground(new java.awt.Color(29, 29, 29));
         LR1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LR1.setText("R1");
         LR1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -152,7 +155,9 @@ public class FVentana extends javax.swing.JFrame {
             }
         });
 
+        LR2.setBackground(new java.awt.Color(255, 255, 255));
         LR2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        LR2.setForeground(new java.awt.Color(29, 29, 29));
         LR2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LR2.setText("R2");
         LR2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -163,7 +168,9 @@ public class FVentana extends javax.swing.JFrame {
             }
         });
 
+        LR3.setBackground(new java.awt.Color(255, 255, 255));
         LR3.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        LR3.setForeground(new java.awt.Color(29, 29, 29));
         LR3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LR3.setText("R3");
         LR3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -174,7 +181,9 @@ public class FVentana extends javax.swing.JFrame {
             }
         });
 
+        LR4.setBackground(new java.awt.Color(255, 255, 255));
         LR4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        LR4.setForeground(new java.awt.Color(29, 29, 29));
         LR4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         LR4.setText("R4");
         LR4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -230,17 +239,6 @@ public class FVentana extends javax.swing.JFrame {
                         .addComponent(LR4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(TFRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(TFNombre))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(TFTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(TFSangre, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(TFEdad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(BNuevo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -248,7 +246,17 @@ public class FVentana extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(BEliminar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(BLimpiar)))
+                        .addComponent(BLimpiar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(TFTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TFSangre, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(TFEdad, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(TFRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TFNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(42, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -269,9 +277,10 @@ public class FVentana extends javax.swing.JFrame {
                             .addComponent(TFRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(TFNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(TFTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
-                            .addComponent(TFSangre)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(TFSangre, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+                                .addComponent(TFTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
                             .addComponent(TFEdad))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -279,7 +288,7 @@ public class FVentana extends javax.swing.JFrame {
                             .addComponent(BModificar)
                             .addComponent(BEliminar)
                             .addComponent(BLimpiar))))
-                .addContainerGap(224, Short.MAX_VALUE))
+                .addGap(224, 224, 224))
         );
 
         pack();
@@ -308,7 +317,6 @@ public class FVentana extends javax.swing.JFrame {
     private void BNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BNuevoActionPerformed
         if (BNuevo.getText().equals("Nuevo")) {
             onOff(true);
-            TFRegistro.setEnabled(false);
             BNuevo.setText("Guardar");
             BEliminar.setText("Cancelar");
             TFRegistro.setText(registros[numeroEtiqueta].getEtiqueta().getText());
@@ -320,12 +328,12 @@ public class FVentana extends javax.swing.JFrame {
                 for (int x = 0; x < registros[numeroEtiqueta].getDatos().length; x++) {
                     registros[numeroEtiqueta].getDatos()[x] = registroTF[x].getText();
                 }
-
-                limpiar();
-                onOff(false);
                 registros[numeroEtiqueta].setOcupado(true);
                 coloresFondo(E.OCUPADO);
+                limpiar();
+                onOff(false);
                 BNuevo.setText("Nuevo");
+                BEliminar.setText("Eliminar");
             }
         }
     }//GEN-LAST:event_BNuevoActionPerformed
@@ -342,6 +350,8 @@ public class FVentana extends javax.swing.JFrame {
             limpiar();
             onOff(false);
             coloresFondo(E.LIBRE);
+            BNuevo.setText("Nuevo");
+            BEliminar.setText("Eliminar");
         }
     }//GEN-LAST:event_BEliminarActionPerformed
 
