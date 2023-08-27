@@ -244,6 +244,11 @@ public class FVentana extends javax.swing.JFrame {
         TFNombre.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
 
         BLimpiar.setText("Limpiar");
+        BLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BLimpiarActionPerformed(evt);
+            }
+        });
 
         TFTelefono.setBorder(javax.swing.BorderFactory.createTitledBorder("Telefono"));
 
@@ -383,8 +388,13 @@ public class FVentana extends javax.swing.JFrame {
     }//GEN-LAST:event_BEliminarActionPerformed
 
     private void BModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BModificarActionPerformed
-        // TODO add your handling code here:
+        BModificar.setEnabled(false);
+        BNuevo.setText("Guardar");
     }//GEN-LAST:event_BModificarActionPerformed
+
+    private void BLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BLimpiarActionPerformed
+        limpiar();
+    }//GEN-LAST:event_BLimpiarActionPerformed
 
     /**
      * @param args the command line arguments
