@@ -5,7 +5,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 // @author Rogelio Cervantes Castellon
-
 public class FVentana extends javax.swing.JFrame {
 
     Registro[] registros = new Registro[4];
@@ -28,10 +27,10 @@ public class FVentana extends javax.swing.JFrame {
     }
 
     void cargarElementos() {
-        registros[0] = new Registro(LR1, false, null);
-        registros[1] = new Registro(LR2, false, null);
-        registros[2] = new Registro(LR3, false, null);
-        registros[3] = new Registro(LR4, false, null);
+        registros[0] = new Registro(LR1, false, new String[5]);
+        registros[1] = new Registro(LR2, false, new String[5]);
+        registros[2] = new Registro(LR3, false, new String[5]);
+        registros[3] = new Registro(LR4, false, new String[5]);
 
         registroTF[0] = TFRegistro;
         registroTF[1] = TFNombre;
@@ -97,24 +96,45 @@ public class FVentana extends javax.swing.JFrame {
 
     boolean checkInfo() {
         String[] tipoSangre = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
-        
+        String telefono = TFTelefono.getText();
+        String edad = TFEdad.getText();
+        boolean[] boolArr = {true, true, true, true, true};
+
         for (int i = 0; i < tipoSangre.length; i++) {
-            if (!tipoSangre[i].equals(TFSangre.getText())) {
-                return true;
+            if (tipoSangre[i].equals(TFSangre.getText())) {
+                boolArr[0] = true;
+                break;
+            } else {
+                boolArr[0] = false;
             }
         }
-        
+
         for (int i = 0; i < registroTF.length; i++) {
             if (registroTF[i].getText().equals("")) {
-                return true;
+                boolArr[1] = false;
+                break;
             }
         }
-        
-        if (TFTelefono.getText().length() != 10) {
-            return true;
+
+        for (int i = 0; i < telefono.length(); i++) {
+            if (!Character.isDigit(telefono.charAt(i))) {
+                boolArr[2] = false;
+                break;
+            }
         }
-        
-        return false;
+
+        for (int i = 0; i < edad.length(); i++) {
+            if (!Character.isDigit(edad.charAt(i))) {
+                boolArr[3] = false;
+                break;
+            }
+        }
+
+        if (telefono.length() != 10) {
+            boolArr[4] = false;
+        }
+
+        return (boolArr[0] && boolArr[1] && boolArr[2] && boolArr[3] && boolArr[4]);
     }
 
     /**
@@ -131,7 +151,6 @@ public class FVentana extends javax.swing.JFrame {
         LR3 = new javax.swing.JLabel();
         LR4 = new javax.swing.JLabel();
         TFRegistro = new javax.swing.JTextField();
-        TFTelefono = new javax.swing.JTextField();
         TFSangre = new javax.swing.JTextField();
         TFEdad = new javax.swing.JTextField();
         BNuevo = new javax.swing.JButton();
@@ -139,6 +158,7 @@ public class FVentana extends javax.swing.JFrame {
         BEliminar = new javax.swing.JButton();
         TFNombre = new javax.swing.JTextField();
         BLimpiar = new javax.swing.JButton();
+        TFTelefono = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -196,8 +216,6 @@ public class FVentana extends javax.swing.JFrame {
 
         TFRegistro.setBorder(javax.swing.BorderFactory.createTitledBorder("Registro"));
 
-        TFTelefono.setBorder(javax.swing.BorderFactory.createTitledBorder("Telefono"));
-
         TFSangre.setBorder(javax.swing.BorderFactory.createTitledBorder("Tipo de sangre"));
 
         TFEdad.setBorder(javax.swing.BorderFactory.createTitledBorder("Edad"));
@@ -210,6 +228,11 @@ public class FVentana extends javax.swing.JFrame {
         });
 
         BModificar.setText("Modificar");
+        BModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BModificarActionPerformed(evt);
+            }
+        });
 
         BEliminar.setText("Eliminar");
         BEliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -221,6 +244,8 @@ public class FVentana extends javax.swing.JFrame {
         TFNombre.setBorder(javax.swing.BorderFactory.createTitledBorder("Nombre"));
 
         BLimpiar.setText("Limpiar");
+
+        TFTelefono.setBorder(javax.swing.BorderFactory.createTitledBorder("Telefono"));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -279,8 +304,8 @@ public class FVentana extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(TFSangre, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
-                                .addComponent(TFTelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE))
+                                .addComponent(TFSangre, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(TFTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(TFEdad))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -322,7 +347,7 @@ public class FVentana extends javax.swing.JFrame {
             TFRegistro.setText(registros[numeroEtiqueta].getEtiqueta().getText());
             TFNombre.requestFocus();
         } else {
-            if (checkInfo()) {
+            if (!checkInfo()) {
                 JOptionPane.showMessageDialog(null, "Uno de los campos es incorrecto.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             } else {
                 for (int x = 0; x < registros[numeroEtiqueta].getDatos().length; x++) {
@@ -344,6 +369,8 @@ public class FVentana extends javax.swing.JFrame {
                     == JOptionPane.YES_OPTION) {
                 registros[numeroEtiqueta].setDatos(null);
                 registros[numeroEtiqueta].setOcupado(false);
+                limpiar();
+                onOff(false);
                 coloresFondo(E.LIBRE);
             }
         } else {
@@ -354,6 +381,10 @@ public class FVentana extends javax.swing.JFrame {
             BEliminar.setText("Eliminar");
         }
     }//GEN-LAST:event_BEliminarActionPerformed
+
+    private void BModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BModificarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BModificarActionPerformed
 
     /**
      * @param args the command line arguments
