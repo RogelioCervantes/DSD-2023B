@@ -2,6 +2,7 @@
 import java.awt.Color;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -19,8 +20,6 @@ public class FVentana extends javax.swing.JFrame {
     enum E {
         LIBRE, OCUPADO, SELECCIONADO
     }
-    int numeroEtiqueta;
-    int numeroEtiquetaPrev;
 
     public FVentana() {
         initComponents();
@@ -33,10 +32,10 @@ public class FVentana extends javax.swing.JFrame {
     }
 
     void cargarElementos() {
-        registros[0] = new Registro(LR1, false, new String[5]);
-        registros[1] = new Registro(LR2, false, new String[5]);
-        registros[2] = new Registro(LR3, false, new String[5]);
-        registros[3] = new Registro(LR4, false, new String[5]);
+        registros[0] = new Registro(LR1, false, false, new String[5]);
+        registros[1] = new Registro(LR2, false, false, new String[5]);
+        registros[2] = new Registro(LR3, false, false, new String[5]);
+        registros[3] = new Registro(LR4, false, false, new String[5]);
 
         registroTF[0] = TFRegistro;
         registroTF[1] = TFNombre;
@@ -60,19 +59,19 @@ public class FVentana extends javax.swing.JFrame {
         }
     }
 
-    void coloresFondo(E estado, int numE) {
+    void coloresFondo(E estado, JLabel etiqueta) {
         switch (estado) {
             case LIBRE:
-                registros[numE].getEtiqueta().setBackground(Color.WHITE);
-                registros[numE].getEtiqueta().setForeground(grisaceo);
+                etiqueta.setBackground(Color.WHITE);
+                etiqueta.setForeground(grisaceo);
                 break;
             case OCUPADO:
-                registros[numE].getEtiqueta().setBackground(grisaceo);
-                registros[numE].getEtiqueta().setForeground(Color.WHITE);
+                etiqueta.setBackground(grisaceo);
+                etiqueta.setForeground(Color.WHITE);
                 break;
             case SELECCIONADO:
-                registros[numE].getEtiqueta().setBackground(rojizo);
-                registros[numE].getEtiqueta().setForeground(grisaceo);
+                etiqueta.setBackground(rojizo);
+                etiqueta.setForeground(grisaceo);
                 break;
             default:
                 throw new AssertionError();
@@ -80,36 +79,43 @@ public class FVentana extends javax.swing.JFrame {
     }
 
     void limpiar() {
-        for (int i = 0; i < registroTF.length; i++) {
-            registroTF[i].setText("");
-        }
+        for (JTextField n : registroTF) n.setText("");
     }
 
-    void etiquetaSeleccionada(int n) {
-        limpiar();
-        onOff(false);
-        BNuevo.setText("Nuevo");
-        BEliminar.setText("Eliminar");
-        numeroEtiqueta = n;
-        
-        if (registros[numeroEtiqueta].getEtiqueta().getBackground() != rojizo) {
-            if (registros[numeroEtiqueta].isOcupado()) {
-                for (int i = 0; i < registroTF.length; i++) {
-                    registroTF[i].setText(registros[numeroEtiqueta].getDatos()[i]);
+    void etiquetaSeleccionada(Registro R) {
+        for (Registro n : registros) {
+            if (n.seleccionado) {
+                int taseguro = JOptionPane.showConfirmDialog(null, "¿Cambiar de registro?", "Registro seleccionado", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
+                if (taseguro == JOptionPane.YES_OPTION) {
+                    if (!n.ocupado) coloresFondo(E.LIBRE, n.etiqueta);
+                    n.seleccionado = false;
+                    break;
+                } else {
+                    return;
                 }
-                BModificar.setEnabled(true);
-                BEliminar.setEnabled(true);
-            } else {
-                BNuevo.setEnabled(true);
-                coloresFondo(E.SELECCIONADO, numeroEtiqueta);
             }
         }
+        if (R.ocupado) {
+            for (int i = 0; i < registroTF.length; i++) {
+                registroTF[i].setText(R.datos[i]);
+            }
+            BModificar.setEnabled(true);
+            BEliminar.setEnabled(true);
+        } else {
+            limpiar();
+            onOff(false);
+            BNuevo.setEnabled(true);
+            BNuevo.setText("Nuevo");
+            BEliminar.setText("Eliminar");
+            coloresFondo(E.SELECCIONADO, R.etiqueta);
+        }
+        R.seleccionado = true;
     }
 
     boolean checkInfo() {
-        
+
         // Codigo espagueti para verificar que todos los campos esten correctos
-        
         String[] tipoSangre = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
         String telefono = TFTelefono.getText();
         String edad = TFEdad.getText();
@@ -152,11 +158,16 @@ public class FVentana extends javax.swing.JFrame {
         return (boolArr[0] && boolArr[1] && boolArr[2] && boolArr[3] && boolArr[4]);
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+    Registro registroSeleccionado() {
+        // Busca cual etiqueta esta seleccionada para usarla
+        for (Registro n : registros) {
+            if (n.seleccionado) {
+                return n;
+            }
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -322,10 +333,11 @@ public class FVentana extends javax.swing.JFrame {
                             .addComponent(TFRegistro, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(TFNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(TFSangre, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(TFTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(TFEdad, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(TFEdad, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(TFSangre, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(TFTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(BNuevo)
@@ -339,97 +351,72 @@ public class FVentana extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void LR1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR1MouseClicked
-        numeroEtiquetaPrev = numeroEtiqueta;
-        if (!registros[numeroEtiqueta].isOcupado()) {
-            if (JOptionPane.showConfirmDialog(null, "¿Cambiar de registro?", "Registro seleccionado", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE)
-                    == JOptionPane.YES_OPTION) {
-                coloresFondo(E.LIBRE, numeroEtiquetaPrev);
-            } else {
-                return;
-            }
-        }
-        etiquetaSeleccionada(0);
+        etiquetaSeleccionada(registros[0]);
     }//GEN-LAST:event_LR1MouseClicked
 
     private void LR2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR2MouseClicked
-        numeroEtiquetaPrev = numeroEtiqueta;
-        if (!registros[numeroEtiqueta].isOcupado()) {
-            if (JOptionPane.showConfirmDialog(null, "¿Cambiar de registro?", "Registro seleccionado", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE)
-                    == JOptionPane.YES_OPTION) {
-                coloresFondo(E.LIBRE, numeroEtiquetaPrev);
-            } else {
-                return;
-            }
-        }
-        etiquetaSeleccionada(1);
+        etiquetaSeleccionada(registros[1]);
     }//GEN-LAST:event_LR2MouseClicked
 
     private void LR3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR3MouseClicked
-        numeroEtiquetaPrev = numeroEtiqueta;
-        if (!registros[numeroEtiqueta].isOcupado()) {
-            if (JOptionPane.showConfirmDialog(null, "¿Cambiar de registro?", "Registro seleccionado", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE)
-                    == JOptionPane.YES_OPTION) {
-                coloresFondo(E.LIBRE, numeroEtiquetaPrev);
-            } else {
-                return;
-            }
-        }
-        etiquetaSeleccionada(2);
+        etiquetaSeleccionada(registros[2]);
     }//GEN-LAST:event_LR3MouseClicked
 
     private void LR4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_LR4MouseClicked
-        numeroEtiquetaPrev = numeroEtiqueta;
-        if (!registros[numeroEtiqueta].isOcupado()) {
-            if (JOptionPane.showConfirmDialog(null, "¿Cambiar de registro?", "Registro seleccionado", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE)
-                    == JOptionPane.YES_OPTION) {
-                coloresFondo(E.LIBRE, numeroEtiquetaPrev);
-            } else {
-                return;
-            }
-        }
-        etiquetaSeleccionada(3);
+        etiquetaSeleccionada(registros[3]);
     }//GEN-LAST:event_LR4MouseClicked
 
     private void BNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BNuevoActionPerformed
+        Registro R = registroSeleccionado();
+
         if (BNuevo.getText().equals("Nuevo")) {
             onOff(true);
+            BModificar.setEnabled(false);
             BNuevo.setText("Guardar");
             BEliminar.setText("Cancelar");
-            TFRegistro.setText(registros[numeroEtiqueta].getEtiqueta().getText());
+            TFRegistro.setText(R.etiqueta.getText());
             TFNombre.requestFocus();
         } else {
             if (!checkInfo()) {
                 JOptionPane.showMessageDialog(null, "Uno de los campos es incorrecto.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             } else {
-                for (int x = 0; x < registros[numeroEtiqueta].getDatos().length; x++) {
-                    registros[numeroEtiqueta].getDatos()[x] = registroTF[x].getText();
+                for (int i = 0; i < R.datos.length; i++) {
+                    R.datos[i] = registroTF[i].getText();
                 }
-                registros[numeroEtiqueta].setOcupado(true);
-                coloresFondo(E.OCUPADO, numeroEtiqueta);
                 limpiar();
                 onOff(false);
+                R.ocupado = true;
+                R.seleccionado = false;
                 BNuevo.setText("Nuevo");
                 BEliminar.setText("Eliminar");
+                coloresFondo(E.OCUPADO, R.etiqueta);
+                JOptionPane.showMessageDialog(null, "Registro exitoso.", "Registro", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }//GEN-LAST:event_BNuevoActionPerformed
 
     private void BEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BEliminarActionPerformed
+        Registro R = registroSeleccionado();
+
         if (BEliminar.getText().equals("Eliminar")) {
-            if (JOptionPane.showConfirmDialog(null, "¿Seguro?", "Eliminar registro", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)
-                    == JOptionPane.YES_OPTION) {
-                registros[numeroEtiqueta].setDatos(null);
-                registros[numeroEtiqueta].setOcupado(false);
-                limpiar();
+            int taseguro = JOptionPane.showConfirmDialog(null, "¿Seguro?", "Eliminar registro", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+            if (taseguro == JOptionPane.YES_OPTION) {
+                R.datos = null;
+                R.ocupado = false;
+                R.seleccionado = false;
+                coloresFondo(E.LIBRE, R.etiqueta);
                 onOff(false);
-                coloresFondo(E.LIBRE, numeroEtiqueta);
+                limpiar();
             }
         } else {
             limpiar();
             onOff(false);
-            coloresFondo(E.LIBRE, numeroEtiqueta);
+            R.seleccionado = false;
             BNuevo.setText("Nuevo");
             BEliminar.setText("Eliminar");
+            if (!R.ocupado) coloresFondo(E.LIBRE, R.etiqueta);
+            
         }
     }//GEN-LAST:event_BEliminarActionPerformed
 
