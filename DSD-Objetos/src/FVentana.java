@@ -10,6 +10,8 @@ import javax.swing.JTextField;
 public class FVentana extends javax.swing.JFrame {
 
     Registro[] registros = new Registro[4];
+    Archivo archivo = new Archivo();
+    
     JTextField[] registroTF = new JTextField[5];
     JButton[] botones = new JButton[4];
     Color rojizo = new Color(239, 0, 62);
@@ -32,10 +34,10 @@ public class FVentana extends javax.swing.JFrame {
     }
 
     void cargarElementos() {
-        registros[0] = new Registro(LR1, false, false, new String[5]);
-        registros[1] = new Registro(LR2, false, false, new String[5]);
-        registros[2] = new Registro(LR3, false, false, new String[5]);
-        registros[3] = new Registro(LR4, false, false, new String[5]);
+        inicializarRegistro(0, LR1);
+        inicializarRegistro(1, LR2);
+        inicializarRegistro(2, LR3);
+        inicializarRegistro(3, LR4);
 
         registroTF[0] = TFRegistro;
         registroTF[1] = TFNombre;
@@ -49,6 +51,18 @@ public class FVentana extends javax.swing.JFrame {
         botones[3] = BLimpiar;
     }
 
+    void inicializarRegistro(int index, JLabel etiqueta) {
+        String[] nombresArchivosGuardados = archivo.nombreRegistros();
+        
+        try {
+            registros[index] = new Registro(etiqueta, true, false, archivo.leerRegistro(nombresArchivosGuardados[index]));
+            coloresFondo(E.OCUPADO, etiqueta);
+        } catch (Exception e) {
+            registros[index] = new Registro(etiqueta, false, false, new String[5]);
+        }
+        
+    }
+    
     void onOff(boolean actDesc) {
         for (int y = 1; y < registroTF.length; y++) {
             registroTF[y].setEnabled(actDesc);
@@ -383,6 +397,7 @@ public class FVentana extends javax.swing.JFrame {
                 for (int i = 0; i < R.datos.length; i++) {
                     R.datos[i] = registroTF[i].getText();
                 }
+                archivo.guardarRegistro(R.datos, R.etiqueta.getText());
                 limpiar();
                 onOff(false);
                 R.ocupado = true;

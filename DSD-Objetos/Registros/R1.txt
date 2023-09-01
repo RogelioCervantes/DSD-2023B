@@ -1,0 +1,5 @@
+Etiqueta : R1
+Nombre : rogr
+Telefono : 3171314534
+Tipo de sangre : AB+
+Edad : 22
