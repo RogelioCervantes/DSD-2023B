@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.util.Arrays;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;

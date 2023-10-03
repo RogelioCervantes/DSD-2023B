@@ -1,0 +1,5 @@
+Etiqueta : R4
+Nombre : buh
+Telefono : 3334445656
+Tipo-de-sangre : B-
+Edad : 54
