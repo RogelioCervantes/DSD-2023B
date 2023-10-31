@@ -96,7 +96,6 @@ public class GasServidor extends javax.swing.JFrame {
             
             s.enviarInfo(nombres, valores);
             
-            
         } else {
             JOptionPane.showMessageDialog(rootPane, "Solo se aceptan números", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }

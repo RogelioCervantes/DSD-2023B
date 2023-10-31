@@ -1,4 +1,5 @@
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Observable;
@@ -14,7 +15,7 @@ public class Servidor extends Observable implements Runnable {
     public Servidor(int puerto) {
         this.puerto = puerto;
     }
-    
+
     @Override
     public void run() {
         ServerSocket servidor = null;
@@ -43,10 +44,8 @@ public class Servidor extends Observable implements Runnable {
                 sc.close(); // Se cierra el cliente
                 System.out.println("Cliente desconectado");
             }
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Algo salio mal: " + e);
         }
     }
-
 }

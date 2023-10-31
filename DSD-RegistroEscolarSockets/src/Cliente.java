@@ -1,5 +1,5 @@
-
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -9,36 +9,31 @@ import java.net.Socket;
 public class Cliente implements Runnable {
 
     private int puerto;
-    private String mensaje;
-    private String host;
+    private String[] registro;
 
-    public Cliente(int puerto, String mensaje) {
+    public Cliente(int puerto, String[] registro) {
         this.puerto = puerto;
-        this.mensaje = mensaje;
-    }
-    
-    public Cliente(int puerto, String mensaje, String host) {
-        this.puerto = puerto;
-        this.mensaje = mensaje;
-        this.host = host;
+        this.registro = registro;
     }
 
     @Override
     public void run() {
         // Host del servidor
-        host = "127.0.0.1"; // local host
+        final String HOST = "127.0.0.1"; // local host
         DataOutputStream out;
 
         try {
-            Socket sc = new Socket(host, puerto);
+            Socket sc = new Socket(HOST, puerto);
             out = new DataOutputStream(sc.getOutputStream());
 
             // Se manda el mensaje al servidor
-            out.writeUTF(mensaje);
-
+            for (int i = 0; i < registro.length; i++) {
+                out.writeUTF(registro[i]);
+            }
+            
             sc.close();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Algo salio mal: " + e);
         }
 
